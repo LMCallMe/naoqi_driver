@@ -72,7 +72,7 @@
     },
     "audio":
     {
-      "enabled"       : true
+      "enabled"       : false
     },
     "bumper":
     {

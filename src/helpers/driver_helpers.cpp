@@ -41,7 +41,14 @@ static naoqi_bridge_msgs::RobotInfo& getRobotInfoLocal( const qi::SessionPtr& se
   // Get the robot type
   std::cout << "Receiving information about robot model" << std::endl;
   qi::AnyObject p_memory = session->service("ALMemory");
-  std::string robot = p_memory.call<std::string>("getData", "RobotConfig/Body/Type" );
+  std::string robot;
+  try{
+    robot = p_memory.call<std::string>("getData", "RobotConfig/Body/Type" );
+  }catch(const qi::FutureUserException &e){
+    std::cout << e.what() << std::endl;
+    std::cout << "using Nao robot bridge" << std::endl;
+    robot = "nao";
+  }
   std::transform(robot.begin(), robot.end(), robot.begin(), ::tolower);
 
   if (std::string(robot) == "nao")
@@ -56,7 +63,7 @@ static naoqi_bridge_msgs::RobotInfo& getRobotInfoLocal( const qi::SessionPtr& se
   {
     info.type = naoqi_bridge_msgs::RobotInfo::ROMEO;
   }
-
+  
   // Get the data from RobotConfig
   qi::AnyObject p_motion = session->service("ALMotion");
   std::vector<std::vector<qi::AnyValue> > config = p_motion.call<std::vector<std::vector<qi::AnyValue> > >("getRobotConfig");
